@@ -3,20 +3,26 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.urls import reverse
 from .models import Question, Choices
+from django.views import generic
 
 # Create your views here.
-def index(request):
-    latest_question = Question.objects.order_by('-pub_date')[:3]
-    return render(request, 'polls/index_page.html', {'latest_question': latest_question})
+class IndexView(generic.ListView):
+    template_name = 'polls/index_page.html'
+    context_object_name = 'latest_question'
+
+    def get_queryset(self):
+        return Question.objects.order_by('-pub_date')[:5]
+    
+
+class DetailView(generic.DetailView):
+    model = Question
+    template_name = 'polls/detail_page.html'
 
 
-def detail(request, pk):
-    question = get_object_or_404(Question, id=pk)
-    return render(request, 'polls/detail_page.html', {'question': question})
+class ResultsView(generic.DetailView):
+    model = Question
+    template_name = 'polls/results_page.html'
 
-def result(request, pk):
-    question = Question.objects.get(id=pk)
-    return render(request, 'polls/results_page.html', {'question': question})
 
 def vote(request, pk):
     question = get_object_or_404(Question, id=pk)
