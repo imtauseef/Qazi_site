@@ -20,6 +20,11 @@ class DetailView(generic.DetailView):
     model = Question
     template_name = 'polls/detail_page.html'
 
+    def get_queryset(self):
+        """
+        Exclude all that questions whose pub_date is in future."""
+        return Question.objects.filter(pub_date__lte=timezone.now())
+
 
 class ResultsView(generic.DetailView):
     model = Question
